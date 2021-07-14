@@ -8,10 +8,11 @@
 <div>
   <p>Entries:</p>
   <ol>
-    <% @leaderboard.entries.order(score: :desc).each do |entry| %>
+    <% @entries.order(score: :desc).each do |entry| %>
     <li><%= entry.username %> - <%= entry.score %></li>
   <% end -%>
   </ol>
+  <%= paginate @entries %>
 </div>
 
 <div>
