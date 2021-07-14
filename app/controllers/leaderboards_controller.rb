@@ -3,7 +3,7 @@ class LeaderboardsController < ApplicationController
 
   # GET /leaderboards
   def index
-    @leaderboards = Leaderboard.all
+    @leaderboards = Leaderboard.page params[:page]
   end
 
   # GET /leaderboards/1
