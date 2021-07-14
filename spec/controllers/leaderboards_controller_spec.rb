@@ -141,10 +141,12 @@ RSpec.describe LeaderboardsController, type: :controller do
   describe 'POST #add_score' do
     it 'adds score' do
       leaderboard = Leaderboard.create! valid_attributes
+      params = { id: leaderboard.id, username: 'lala', score: 1 }
 
-      expect {
-        post :add_score, params: { id: leaderboard.id, username: 'lala', score: 1 }
-      }.to change(LeaderboardEntry, :count).by(1)
+      expect(SaveScoreService).to receive(:call).with(
+        params[:id].to_s, params[:username], params[:score].to_s
+      ).and_return(leaderboard)
+      post :add_score, params: params
     end
   end
 

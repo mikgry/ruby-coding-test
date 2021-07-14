@@ -1,5 +1,5 @@
 class LeaderboardsController < ApplicationController
-  before_action :set_leaderboard, only: [:show, :edit, :update, :destroy, :add_score]
+  before_action :set_leaderboard, only: [:show, :edit, :update, :destroy]
 
   # GET /leaderboards
   def index
@@ -46,14 +46,7 @@ class LeaderboardsController < ApplicationController
   end
 
   def add_score
-    username, score = params[:username]
-    score = params[:score]
-    if @leaderboard.entries.where(username: username).exists?
-      entry = @leaderboard.entries.where(username: username).first
-      entry.update(score: score.to_i + entry.score)
-    else
-      @leaderboard.entries.create(username: username, score: score)
-    end
+    @leaderboard = SaveScoreService.call(params[:id], params[:username], params[:score])
     redirect_to @leaderboard, notice: 'Score added'
   end
 
