@@ -19,7 +19,7 @@
   <p>Scores:</p>
   <ul>
     <% @scores.each do |score| %>
-    <li><%= l(score.created_at) %> <%= score.username %> - <%= score.score %></li>
+    <li><%= l(score.created_at) %> <%= score.username %> - <%= score.score %>  <%= link_to 'Destroy', leaderboard_score_record_path(@leaderboard, score), method: :delete, data: { confirm: 'Are you sure?' } %></li>
   <% end -%>
   </ul>
   <%= paginate @scores %>
