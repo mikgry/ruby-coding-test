@@ -8,14 +8,25 @@
 <div>
   <p>Entries:</p>
   <ol>
-    <% @leaderboard.entries.sort_by(&:score).reverse.each do |entry| %>
+    <% @entries.each do |entry| %>
     <li><%= entry.username %> - <%= entry.score %></li>
   <% end -%>
   </ol>
+  <%= paginate @entries %>
 </div>
 
 <div>
-  <%= form_tag add_score_leaderboard_path(@leaderboard), method: :post do %>
+  <p>Scores:</p>
+  <ul>
+    <% @scores.each do |score| %>
+    <li><%= l(score.created_at) %> <%= score.username %> - <%= score.score %>  <%= link_to 'Destroy', leaderboard_score_record_path(@leaderboard, score), method: :delete, data: { confirm: 'Are you sure?' } %></li>
+  <% end -%>
+  </ul>
+  <%= paginate @scores, param_name: :scores_page %>
+</div>
+
+<div>
+  <%= form_tag leaderboard_score_records_path(@leaderboard), method: :post do %>
     <p>
       <%= label_tag "Username" %>
       <%= text_field_tag "username" %>

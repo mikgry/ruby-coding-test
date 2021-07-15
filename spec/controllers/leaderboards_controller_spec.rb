@@ -137,15 +137,4 @@ RSpec.describe LeaderboardsController, type: :controller do
       expect(response).to redirect_to(leaderboards_url)
     end
   end
-
-  describe 'POST #add_score' do
-    it 'adds score' do
-      leaderboard = Leaderboard.create! valid_attributes
-
-      expect {
-        post :add_score, params: { id: leaderboard.id, username: 'lala', score: 1 }
-      }.to change(LeaderboardEntry, :count).by(1)
-    end
-  end
-
 end
