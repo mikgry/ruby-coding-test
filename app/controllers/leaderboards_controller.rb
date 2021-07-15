@@ -9,7 +9,8 @@ class LeaderboardsController < ApplicationController
   # GET /leaderboards/1
   def show
     @entries = @leaderboard.entries.order(score: :desc).page params[:page]
-    @scores = @leaderboard.score_records.includes(:entry).order(created_at: :desc).page params[:scores_page]
+    @scores = @leaderboard.score_records.includes(:entry).order(created_at: :desc)
+      .page(params[:scores_page])
   end
 
   # GET /leaderboards/new
