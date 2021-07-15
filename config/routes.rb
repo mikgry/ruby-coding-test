@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :leaderboard_entries
   resources :leaderboards do
-    post :add_score, on: :member
+    resources :score_records, only: [:create]
   end
 
   root to: 'leaderboards#index'

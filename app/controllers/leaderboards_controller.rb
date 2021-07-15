@@ -47,15 +47,6 @@ class LeaderboardsController < ApplicationController
     redirect_to leaderboards_url, notice: 'Leaderboard was successfully destroyed.'
   end
 
-  def add_score
-    result = SaveScoreService.call(params[:id], params[:username], params[:score])
-    if result[:success]
-      redirect_to result[:data], notice: 'Score added'
-    else
-      redirect_to Leaderboard.find(params[:id]), alert: "Score isn't added"
-    end
-  end
-
   private
 
   # Use callbacks to share common setup or constraints between actions.
