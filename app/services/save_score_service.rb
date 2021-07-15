@@ -6,12 +6,12 @@ class SaveScoreService < BaseService
   end
 
   def call
-    if entry_exists?
+    position_change = if entry_exists?
       update_entry
     else
       create_entry
     end
-    { success: true, data: leaderboard }
+    { success: true, data: { leaderboard: leaderboard, position_change: position_change } }
   rescue ActiveRecord::RecordInvalid => exception
     { success: false, data: exception }
   end
@@ -26,10 +26,16 @@ class SaveScoreService < BaseService
 
   def update_entry
     entry = leaderboard.entries.find_by(username: username)
+    old_position = position_query(entry.id).load
     LeaderboardEntry.transaction do
       LeaderboardEntry.update_counters(entry.id, score: score.to_i)
       create_score_record(entry)
     end
+    old_position - position_query(entry.id).load
+  end
+
+  def position_query(entry_id)
+    @position_query ||= GetRankQuery.new(leaderboard.id, entry_id)
   end
 
   def create_entry
@@ -37,6 +43,7 @@ class SaveScoreService < BaseService
       entry = leaderboard.entries.create!(username: username, score: score)
       create_score_record(entry)
     end
+    nil
   rescue ActiveRecord::RecordNotUnique
     update_entry
   end

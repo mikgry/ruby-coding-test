@@ -22,6 +22,11 @@ describe SaveScoreService do
     }.to change(ScoreRecord, :count).by(1)
   end
 
+  it "returns position_change eq nil" do
+    result = described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
+    expect(result[:data][:position_change]).to be_nil
+  end
+
   context "can't save entry score" do
     it "doesn't update the entry" do
       allow_any_instance_of(described_class).to receive(:create_score_record)
@@ -51,6 +56,11 @@ describe SaveScoreService do
       expect {
         described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
       }.to change(ScoreRecord, :count).by(1)
+    end
+
+    it "returns position_change" do
+      result = described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
+      expect(result[:data][:position_change]).to eq(0)
     end
 
     context "can't save entry score" do
