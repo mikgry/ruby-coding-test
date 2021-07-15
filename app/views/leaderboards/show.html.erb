@@ -8,11 +8,21 @@
 <div>
   <p>Entries:</p>
   <ol>
-    <% @entries.order(score: :desc).each do |entry| %>
+    <% @entries.each do |entry| %>
     <li><%= entry.username %> - <%= entry.score %></li>
   <% end -%>
   </ol>
   <%= paginate @entries %>
+</div>
+
+<div>
+  <p>Scores:</p>
+  <ul>
+    <% @scores.each do |score| %>
+    <li><%= l(score.created_at) %> <%= score.username %> - <%= score.score %></li>
+  <% end -%>
+  </ul>
+  <%= paginate @scores %>
 </div>
 
 <div>

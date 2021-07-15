@@ -9,6 +9,7 @@ class LeaderboardsController < ApplicationController
   # GET /leaderboards/1
   def show
     @entries = @leaderboard.entries.order(score: :desc).page params[:page]
+    @scores = @leaderboard.score_records.includes(:entry).order(created_at: :desc).page params[:scores_page]
   end
 
   # GET /leaderboards/new
@@ -47,8 +48,12 @@ class LeaderboardsController < ApplicationController
   end
 
   def add_score
-    @leaderboard = SaveScoreService.call(params[:id], params[:username], params[:score])
-    redirect_to @leaderboard, notice: 'Score added'
+    result = SaveScoreService.call(params[:id], params[:username], params[:score])
+    if result[:success]
+      redirect_to result[:data], notice: 'Score added'
+    else
+      redirect_to Leaderboard.find(params[:id]), alert: "Score isn't added"
+    end
   end
 
   private

@@ -16,6 +16,22 @@ describe SaveScoreService do
     }.to change(LeaderboardEntry, :count).by(1)
   end
 
+  it "saves the score" do
+    expect {
+      described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
+    }.to change(ScoreRecord, :count).by(1)
+  end
+
+  context "can't save entry score" do
+    it "doesn't update the entry" do
+      allow_any_instance_of(described_class).to receive(:create_score_record)
+        .and_raise(ActiveRecord::RecordInvalid)
+      expect {
+        described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
+      }.to_not change(LeaderboardEntry, :count)
+    end
+  end
+
   context "entry already exists" do
     let!(:entry) { leaderboard.entries.create!(entry_params) }
 
@@ -29,6 +45,22 @@ describe SaveScoreService do
       expect {
         described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
       }.to_not change(LeaderboardEntry, :count)
+    end
+
+    it "saves the score" do
+      expect {
+        described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
+      }.to change(ScoreRecord, :count).by(1)
+    end
+
+    context "can't save entry score" do
+      it "doesn't update the entry" do
+        allow_any_instance_of(described_class).to receive(:create_score_record)
+          .and_raise(ActiveRecord::RecordInvalid)
+        expect {
+          described_class.call(leaderboard.id, entry_params[:username], entry_params[:score])
+        }.to_not change { entry.reload.score }
+      end
     end
   end
 

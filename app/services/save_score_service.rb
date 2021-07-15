@@ -11,7 +11,9 @@ class SaveScoreService < BaseService
     else
       create_entry
     end
-    leaderboard
+    { success: true, data: leaderboard }
+  rescue ActiveRecord::RecordInvalid => exception
+    { success: false, data: exception }
   end
 
   private
@@ -24,12 +26,22 @@ class SaveScoreService < BaseService
 
   def update_entry
     entry = leaderboard.entries.find_by(username: username)
-    LeaderboardEntry.update_counters(entry.id, score: score.to_i)
+    LeaderboardEntry.transaction do
+      LeaderboardEntry.update_counters(entry.id, score: score.to_i)
+      create_score_record(entry)
+    end
   end
 
   def create_entry
-    leaderboard.entries.create!(username: username, score: score)
+    LeaderboardEntry.transaction do
+      entry = leaderboard.entries.create!(username: username, score: score)
+      create_score_record(entry)
+    end
   rescue ActiveRecord::RecordNotUnique
     update_entry
+  end
+
+  def create_score_record(entry)
+    entry.score_records.create!(score: score)
   end
 end
